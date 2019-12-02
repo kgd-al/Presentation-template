@@ -592,4 +592,15 @@
  \end{scope}
 }
 
+%% ----------------------------------- %%
+%                  Misc                 %
+%% ----------------------------------- %%
+
+\makeatletter
+\def\finalgroup{%
+\setkeys{Gin}{draft=false}%
+\@latex@warning{graphicx draft mode locally deactivated}
+}%
+\makeatother
+
 % End of mannbeamer class
