@@ -68,6 +68,11 @@
 % For auto pnotes
 \RequirePackage{pdfpcnotes}
 
+\ifautooverview
+% For double column tables of contents
+\RequirePackage{multicol}
+\fi
+
 \newif\ifnotappendix
 \notappendixtrue
 
@@ -122,16 +127,22 @@
    
    \ifnum\infoslidenumber = \currframe
     \ifshowdurations % Display frame-wide
-     \tikz[remember picture, overlay]
-      \node [minimum width=\paperwidth, minimum height=\paperheight, fill=gray!50, fill opacity=.5, text opacity=1]
-            at (current page.center) {
-             \resizebox{.9\textwidth}{!}{
-              \begin{tabular}{c}
-               \currframe \\
-               \extrainfo
-              \end{tabular}
-             }
-            };
+     \begin{tikzpicture}[remember picture, overlay]
+      \path [fill=gray!50, fill opacity=.75, text opacity=1]
+            (current page.south west) rectangle (\paperwidth, .75\paperheight) node (C) [pos=.5] {};
+      \node [fill=gray!50, anchor=south, scale=5] at (C) {\currframe};
+      \node [fill=gray!50, anchor=north, scale=5] at (C) {\extrainfo};
+     \end{tikzpicture}
+%       \node [minimum width=\paperwidth, minimum height=.8\paperheight, anchor=south,
+%              fill=gray!50, fill opacity=.75, text opacity=1]
+%             at (current page.south) {
+%              \resizebox{.9\textwidth}{!}{
+%               \begin{tabular}{c}
+%                \currframe \\
+%                \extrainfo
+%               \end{tabular}
+%              }
+%             };
     
     \else % Display in footline
      \hspace{1em}\emph{\extrainfo}
@@ -214,6 +225,7 @@
   \setbeamertemplate{frametitle}{}
   \setbeamertemplate{footline}{}
   \begin{frame}[noframenumbering, ok]
+   \begin{multicols}{2}
    \frametitle{Overview}
    \vfill
    \tableofcontents[
@@ -222,6 +234,7 @@
     subsubsectionstyle=hide/hide/hide/hide
    ]
    \vfill
+   \end{multicols}
   \end{frame}
  \endgroup
 }
@@ -307,9 +320,13 @@
 \newcommand\advisors[1]{
   \gdef\insertadvisors{#1}
 }
+\newcommand\titlemisc[1]{
+  \gdef\inserttitlemisc{#1}
+}
 \newcommand\dotitlepage{
- \frame[plain,noframenumbering]{\pnote{Font size test}}
  \frame[noframenumbering, plain, duration=30 s, ok]{
+  \pnote{Font size test}
+  \visible<2>{\null}
   \ifdefined\inserttitleheader
    \vspace{-1cm}
    \inserttitleheader
@@ -335,6 +352,12 @@
    {
     \scriptsize
     \insertadvisors
+   }
+   \fi
+   \ifdefined\inserttitlemisc
+   {
+    \scriptsize
+    \inserttitlemisc
    }
    \fi
   \end{center}
@@ -537,7 +560,7 @@
   \subsection{}
   \begingroup
 %    \setbeamertemplate{frametitle}{}
-   \begin{frame}[plain,noframenumbering,label={lastslide}, #1]
+   \begin{frame}[plain,noframenumbering,label={lastslide}, #1]{\phantom{.}}
     #2   
    \end{frame}
   \endgroup
@@ -553,7 +576,7 @@
   \excludefromnavon
   \begin{frame}[ok]{Annexes}
    \tableofcontents[
-    sectionstyle=show/shaded,
+%     sectionstyle=show/shaded,
     subsectionstyle=show/show/hide,
     subsubsectionstyle=hide/hide/hide/hide
    ]
