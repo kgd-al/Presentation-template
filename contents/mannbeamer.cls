@@ -115,6 +115,9 @@
 \setbeamertemplate{footline}{%
  \usebeamerfont{footline}%
  \usebeamercolor[fg]{footline}%
+
+ % Print extra info to pdfpc
+ \ifx\extrainfo\empty\else\pnote{Should last \extrainfo}\fi
  
  % If there are extra informations and draft mode is on
  \ifdr@ft
@@ -122,8 +125,6 @@
   \else
    % Insert them on the left and clear ?
    \edef\currframe{\theframenumber}
-
-   \pnote{Should last \extrainfo}
    
    \ifnum\infoslidenumber = \currframe
     \ifshowdurations % Display frame-wide
