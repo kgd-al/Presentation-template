@@ -37,7 +37,7 @@
  \showdurationstrue
 }
 
-\DeclareOption*{\PassOptionsToClass{beamer}{\CurrentOption}}
+\DeclareOption*{\PassOptionsToClass{\CurrentOption}{beamer}}
 
 \ProcessOptions*\relax
 
@@ -404,12 +404,17 @@
 }
 
 % Processes duration argument
+\gdef\totalminutes{0}
+\gdef\totalseconds{0}
 \gdef\totalduration{0}
 \define@key{beamerframe}{duration}{%
  \edef\infoslidenumber{\the\numexpr \theframenumber + 1 \relax}
  \ifnotappendix
-   \def\extrainfo{#1 (\totalminutes'' \totalseconds')}
+   \edef\duration{#1}
+   \edef\startduration{\totalminutes'' \totalseconds'}
    \processduration#1 \relax
+   \edef\endduration{\totalminutes'' \totalseconds'}
+   \edef\extrainfo{#1 (\startduration{} to \endduration)}
    \message{Processed duration^^J}
  \else
    \def\extrainfo{#1}
@@ -458,6 +463,12 @@
  \ifmonitorprogress
   \setbeamercolor{background canvas}{bg=mannbeamer@nok@background}
   \setbeamercolor{frametitle}{bg=mannbeamer@nok@foreground}
+ \fi
+}
+\define@key{beamerframe}{nok}[]{
+ \ifmonitorprogress
+  \setbeamercolor{background canvas}{bg=mannbeamer@nok@background}
+  \setbeamercolor{frametitle}{bg=mannbeamer@nok@background}
  \fi
 }
 \define@key{beamerframe}{hok}[]{
