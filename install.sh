@@ -51,6 +51,7 @@ cd contents/
 for file in $(find . -type f -print -o -name 'tikz' -prune) $(find tikz -name "_*" -prune -o -name "*.pdf" -print)
 do
   in=$(readlink -e $file)
+  echo $in
   ext=${file##*.}
   path="$HOME/texmf"
   
@@ -75,7 +76,8 @@ do
     if [ ! -f $out ]
     then
       printf "\033[32m"
-      ln -svf $in $out
+      ln -svf "$in" "$out"
+      [ ! -f "$out" ] && printf "\033[31m -> error\n"
       n=$(($n + 1))
     else
       printf "\033[90mLink to '$out' already exists\n"
