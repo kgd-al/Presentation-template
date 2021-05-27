@@ -131,19 +131,11 @@
      \begin{tikzpicture}[remember picture, overlay]
       \path [fill=gray!50, fill opacity=.75, text opacity=1]
             (current page.south west) rectangle (\paperwidth, .75\paperheight) node (C) [pos=.5] {};
-      \node [fill=gray!50, anchor=south, scale=5] at (C) {\currframe};
-      \node [fill=gray!50, anchor=north, scale=5] at (C) {\extrainfo};
+      \node [fill=gray!50, anchor=south, scale=4] at (C) (fT) {\insertframetitle};
+      \node [fill=gray!50, anchor=south, scale=4, above=0 of fT] (fN) {\currframe};
+      \node [fill=gray!50, anchor=north, scale=4, below=0 of fT] (fI) {\extrainfo};
      \end{tikzpicture}
-%       \node [minimum width=\paperwidth, minimum height=.8\paperheight, anchor=south,
-%              fill=gray!50, fill opacity=.75, text opacity=1]
-%             at (current page.south) {
-%              \resizebox{.9\textwidth}{!}{
-%               \begin{tabular}{c}
-%                \currframe \\
-%                \extrainfo
-%               \end{tabular}
-%              }
-%             };
+
     
     \else % Display in footline
      \hspace{1em}\emph{\extrainfo}
@@ -158,17 +150,6 @@
  \hspace{0.25cm}
  \vspace{0.25cm}
 }
-
-% \setbeamertemplate{background}{%
-%  \ifdr@ft
-%   \ifx\extrainfo\empty
-%   \else
-%    \tikz[remember picture, overlay]
-%     \node [minimum width=\paperwidth, minimum height=\paperheight, fill=gray!50!transparent]
-%           at (current page.center) {\resizebox{.9\textwidth}{!}{\extrainfo}};
-%   \fi
-%  \fi
-% }
 
 
 % Title font
@@ -195,10 +176,10 @@
    \ifdim\wd0=0pt
     \setbox0=\hbox{\insertsectioncomment\unskip}
     \ifdim\wd0=0pt\relax\else
-	 \let\insertframesubtitle\insertsectioncomment
+	 \gdef\insertframesubtitle{\insertsectioncomment}
     \fi
    \else
-    \let\insertframesubtitle\insertsubsubsection
+    \gdef\insertframesubtitle{\insertsubsubsection}
    \fi
   \fi
  \fi
@@ -637,5 +618,7 @@
 \@latex@warning{graphicx draft mode locally deactivated}
 }%
 \makeatother
+
+\def\mcaption#1{{\centering\small#1}}
 
 % End of mannbeamer class
