@@ -404,6 +404,7 @@
 
 % Displays the total duration in a user-friendly manner on the output
 \AtEndDocument{
+ \if\insertduration>0
   \edef\totalminutes{\the\numexpr \totalduration / 60 \relax}
 
   % Correct rounding issue
@@ -420,6 +421,7 @@
                        {Total duration = \totalduration\space = \totalminutes\space minutes \totalseconds\space seconds}
     \ClassWarningNoLine{mannbeamer}{Expected \insertduration \space minutes}
   \fi
+ \fi
 }
 \makeatother
 
