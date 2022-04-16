@@ -135,7 +135,6 @@
       \node [fill=gray!50, anchor=south, scale=4, above=0 of fT] (fN) {\currframe};
       \node [fill=gray!50, anchor=north, scale=4, below=0 of fT] (fI) {\extrainfo};
      \end{tikzpicture}
-
     
     \else % Display in footline
      \hspace{1em}\emph{\extrainfo}
@@ -158,7 +157,8 @@
 
 % Table of contents
 \setbeamertemplate{section in toc}[ball unnumbered]
-\setbeamertemplate{subsection in toc}{\hspace{0.5cm}{\small$\RHD$~\inserttocsubsection}\\}
+\setbeamertemplate{subsection in toc}{\hspace{2em}{\footnotesize\scshape\inserttocsubsection}\\}
+% \setbeamertemplate{subsection in toc}{\hspace{0.5cm}{\small$\RHD$~\inserttocsubsection}\\}
 
 % Auto named frames
 \addtobeamertemplate{frametitle}{
@@ -555,7 +555,7 @@
   \subsection{}
   \begingroup
 %    \setbeamertemplate{frametitle}{}
-   \begin{frame}[plain,noframenumbering,label={lastslide}, #1]{\phantom{.}}
+   \begin{frame}[plain,noframenumbering,label={lastslide}, ok, #1]{\phantom{.}}
     #2   
    \end{frame}
   \endgroup
