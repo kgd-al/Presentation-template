@@ -157,7 +157,7 @@
 
 % Table of contents
 \setbeamertemplate{section in toc}[ball unnumbered]
-\setbeamertemplate{subsection in toc}{\hspace{2em}{\footnotesize\scshape\inserttocsubsection}\\}
+\setbeamertemplate{subsection in toc}{\hspace{2em}{\footnotesize\inserttocsubsection}\\}
 % \setbeamertemplate{subsection in toc}{\hspace{0.5cm}{\small$\RHD$~\inserttocsubsection}\\}
 
 % Auto named frames
