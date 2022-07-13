@@ -1,0 +1,91 @@
+\PassOptionsToPackage{offset}{pdfpcnotes}
+
+\documentclass[
+% auto_overview,    % Insert a table of contents before each section
+auto_sections,      % Insert a title frame before each section
+monitor_progress,   % Frames have a white/orange/red background if passed the option ok/hok/nok (default)
+% show_durations,   % Put a brutal overlay to display each frame's duration
+draft               % As usual
+% final
+]{mannbeamer}
+
+\setkeys{Gin}{draft=false}
+\def\gpath{{annexes/}}
+% Additional paths here
+\expandafter\graphicspath\expandafter{\gpath}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+\setbeamertemplate{caption}{\raggedright\insertcaption\par}
+
+\addbibresource{library.bib}
+
+% Shut warnings of the form 
+% pdfTeX warning: pdflatex (file foo.pdf): PDF inclusion: multiple pdfs with page group included in a single page
+\pdfsuppresswarningpagegroup=1
+
+\AtDataInput{%
+  \stepcounter{citations}
+}
+
+\titleheader{
+ \includegraphics[height=1.5cm]{logos/IRIT}
+ \hfill
+ \includegraphics[height=1.5cm]{logos/REVA}
+ \hfill
+ \includegraphics[height=1.5cm]{logos/UTMP}
+}
+\title{Presentation template for the kgd style}
+\author{Kevin Godin-Dubois}
+\formation{Modifiy as appropriate}
+\date{Last updated: 2022/07/13}
+\duration{5} % Specify the number of minutes (total sum of slides)
+\notessize{15} % For pdfpc
+
+\begin{document}
+
+\def\miniframestyle{default} % default box tick
+\setbeamertemplate{mini frame}[\miniframestyle]
+\setbeamertemplate{mini frame in current subsection}[\miniframestyle]
+
+\setbeamertemplate{description item}{\textbf{\insertdescriptionitem}}
+
+\newenvironment{tinyeq}{\begingroup\tiny\csname align*\endcsname}{\csname endalign*\endcsname\endgroup}
+
+\setbeamerfont{footnote}{size=\tiny}
+
+\begin{notes} % First slide in draft mode
+\end{notes}
+
+\dotitlepage
+
+\section{A section}
+\begin{frame}[duration=1 min, ok]
+ Frame contents are vanilla beamer
+\end{frame}
+\begin{frame}[duration=30 s, hok]
+ This frame is orange in \texttt{draft} mode with option \texttt{monitor\_progress}
+\end{frame}
+\begin{frame}[duration=1 min 30, nok]
+ And this frame is red
+\end{frame}
+
+\section{Another section}
+\begin{frame}[duration=1 min 30]
+ By default frames are labelled as \texttt{nok}
+\end{frame}
+
+\doendpages{
+ final words or page-wide concluding picture
+}
+
+\pageatend
+
+\begin{frame}[ok]
+ Additional content has its own navigation bar
+\end{frame}
+
+
+\end{document}
+ 

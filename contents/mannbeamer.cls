@@ -54,7 +54,8 @@
 \hypersetup{final}
 
 \RequirePackage{tikz}
-\usetikzlibrary{fadings,calc}
+\usetikzlibrary{fadings,calc,arrows}
+\tikzset{>=stealth'}
 
 % For patch command, see \beamer@sectionintoc
 \RequirePackage{etoolbox}
@@ -67,6 +68,12 @@
 
 % For auto pnotes
 \RequirePackage{pdfpcnotes}
+
+% For footnote citations (TODO: option list is quite restrictive)
+\RequirePackage[backend=biber, citestyle=numeric-comp, citetracker=true, sorting=none, giveninits=true, maxcitenames=1, doi=false, isbn=false, url=false]{biblatex}
+
+% For embedded (externally stored) videos
+\RequirePackage{multimedia}
 
 \ifautooverview
 % For double column tables of contents
@@ -112,6 +119,11 @@
 \def\extrainfo{}
 \def\infoslidenumber{-1}
 \beamertemplatenavigationsymbolsempty
+\def\commonfootline{%
+ \insertframenumber/\inserttotalframenumber%
+ \hspace{0.25cm}%
+ \vspace{0.25cm}%
+}
 \setbeamertemplate{footline}{%
  \usebeamerfont{footline}%
  \usebeamercolor[fg]{footline}%
@@ -145,9 +157,7 @@
   \fi
  \fi
  \hfill
- \insertframenumber/\inserttotalframenumber
- \hspace{0.25cm}
- \vspace{0.25cm}
+ \commonfootline
 }
 
 
@@ -404,7 +414,8 @@
 
 % Displays the total duration in a user-friendly manner on the output
 \AtEndDocument{
- \if\insertduration>0
+ \message{^^JExpected duration: \insertduration minutes^^J}
+ \ifnum\insertduration>0
   \edef\totalminutes{\the\numexpr \totalduration / 60 \relax}
 
   % Correct rounding issue
@@ -414,7 +425,7 @@
   \fi
   
   \edef\totalseconds{\the\numexpr \totalduration - (\totalminutes * 60) \relax}
-  \message{Total duration = \totalduration \space = \totalminutes \space minutes \totalseconds \space seconds}
+  \message{^^JTotal duration = \totalduration \space = \totalminutes \space minutes \totalseconds \space seconds^^J}
   
   \ifnum \totalduration = \the\numexpr \insertduration * 60 \relax\else
     \ClassWarningNoLine{mannbeamer}
@@ -586,7 +597,7 @@
    }
    \setbeamertemplate{footline}{
     \ifnum\insertcontinuationcount>0
-     \addtocounter{framenumber}{-1}
+%      \addtocounter{framenumber}{-1}
     \fi
    }
    \section{References}
@@ -597,6 +608,8 @@
    \end{frame} 
   \fi
  \endgroup
+ 
+ \setbeamertemplate{footline}{\hfill\commonfootline}
 }
 
 %% ----------------------------------- %%
@@ -609,6 +622,99 @@
 }{
  \end{scope}
 }
+
+%% ----------------------------------- %%
+%                Citations              %
+%% ----------------------------------- %%
+
+% =============================================================================
+% For pretty footnote citations
+% Mostly verbatim from https://tex.stackexchange.com/questions/45406/footnotes-disappear-when-using-overlays-in-beamer
+%
+\makeatletter
+\newtoggle{cbx@togcite}
+
+% Citation number in brackets
+\renewcommand\@makefntext[1]{%
+ \usebeamerfont{footnote}%
+  \iftoggle{cbx@togcite}
+    {[\@thefnmark]\enspace #1}
+    {\@thefnmark\enspace #1}%
+  \global\togglefalse{cbx@togcite}%
+}
+
+\DeclareCiteCommand{\fncite}[\cbx@superscript]%
+  {%
+   \usebibmacro{cite:init}%
+   \let\multicitedelim=\supercitedelim
+  }{%
+   \usebibmacro{citeindex}%
+   \usebibmacro{fncite}%
+   \usebibmacro{cite:comp}%
+  }
+  {}
+  {\usebibmacro{cite:dump}}
+
+\DeclareCiteCommand{\fntcite}[\cbx@phantom]%
+  {%
+   \usebibmacro{cite:init}%
+   \let\multicitedelim=\supercitedelim
+  }{%
+   \usebibmacro{citeindex}%
+   \usebibmacro{fncite}%
+   \usebibmacro{cite:comp}%
+  }
+  {}
+  {\usebibmacro{cite:dump}}
+
+\newbibmacro*{fncite}{%
+  \ifciteseen
+  {}
+  {%
+   \xappto\cbx@citehook{%
+    \global\toggletrue{cbx@togcite}%
+    \noexpand\footnotetext[\thefield{labelnumber}]{%
+     \fullcite{\thefield{entrykey}}\addperiod}%
+   }%
+  }%
+}
+
+\newrobustcmd{\cbx@superscript}[1]{%
+  \mkbibsuperscript{\mkbibbrackets{#1}}%
+  \cbx@citehook%
+  \global\let\cbx@citehook=\empty%
+}
+
+\newrobustcmd{\cbx@phantom}[1]{%
+  \phantom{#1}%
+  \cbx@citehook%
+  \global\let\cbx@citehook=\empty%
+}
+\let\cbx@citehook=\empty
+\makeatother
+
+
+%% ----------------------------------- %%
+%                 Videos                %
+%% ----------------------------------- %%
+
+\newcommand{\video}[2][width=\paperwidth,height=\paperheight, keepaspectratio]{
+ \href {run:#2.mp4?autostart&loop}
+       {\includegraphics[#1]{{#2}.png}}
+}
+
+\newcommand{\fullscreenvideo}[2][]{
+\begingroup
+ \setbeamertemplate{frametitle}{}
+ \setbeamercolor{background canvas}{bg=black}
+ \begin{frame}[plain, duration=0 s, #1]
+  \begin{tikzpicture}[remember picture, overlay]
+   \node at (current page.center) {\video{#2}};
+  \end{tikzpicture}
+ \end{frame}
+\endgroup
+}
+
 
 %% ----------------------------------- %%
 %                  Misc                 %
