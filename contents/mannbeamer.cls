@@ -54,7 +54,7 @@
 \hypersetup{final}
 
 \RequirePackage{tikz}
-\usetikzlibrary{fadings,calc,arrows}
+\usetikzlibrary{arrows, calc, fadings, positioning}
 \tikzset{>=stealth'}
 
 % For patch command, see \beamer@sectionintoc
@@ -138,22 +138,35 @@
    % Insert them on the left and clear ?
    \edef\currframe{\theframenumber}
    
-   \ifnum\infoslidenumber = \currframe
+   % [WIP DEBUG]: Ignore framenumbering (option noframenumbering seems to clash with \only)
+%    \ClassWarningNoLine{mann}{Data \extrainfo, infoslidenumber: \infoslidenumber, currframe: \currframe}
+%    \ifnum\infoslidenumber = \currframe
     \ifshowdurations % Display frame-wide
-     \begin{tikzpicture}[remember picture, overlay]
+     \setbox0=\hbox{\insertframesubtitle\unskip}
+     \begin{tikzpicture}[remember picture, overlay, every node/.append style={font=\Huge, inner sep=5pt}]
       \path [fill=gray!50, fill opacity=.75, text opacity=1]
             (current page.south west) rectangle (\paperwidth, .75\paperheight) node (C) [pos=.5] {};
-      \node [fill=gray!50, anchor=south, scale=4] at (C) (fT) {\insertframetitle};
-      \node [fill=gray!50, anchor=south, scale=4, above=0 of fT] (fN) {\currframe};
-      \node [fill=gray!50, anchor=north, scale=4, below=0 of fT] (fI) {\extrainfo};
+      \ifdim\wd0=0pt\relax
+       \node [fill=gray!50, anchor=south] at (C) (fT)
+        {\begin{minipage}{\paperwidth}\centering\Huge\insertframetitle\end{minipage}};
+       \def\nT{fT}\def\nB{fT}
+      \else
+       \node [fill=gray!50, anchor=south] at (C) (fT)
+        {\begin{minipage}{\paperwidth}\centering\Large\emph{\insertframetitle}\end{minipage}};
+       \node [fill=gray!50, anchor=north] at (C) (fsT)
+        {\begin{minipage}{\paperwidth}\centering\huge\insertframesubtitle\end{minipage}};
+       \def\nT{fT}\def\nB{fsT}
+      \fi
+      \node [fill=gray!50, anchor=south, above=0 of \nT] (fN) {\currframe};
+      \node [fill=gray!50, anchor=north, below=0 of \nB] (fI) {\extrainfo};
      \end{tikzpicture}
     
     \else % Display in footline
      \hspace{1em}\emph{\extrainfo}
     \fi
-   \else
-    \gdef\extrainfo{\relax}
-   \fi
+%    \else
+%     \gdef\extrainfo{\relax}
+%    \fi
   \fi
  \fi
  \hfill
@@ -316,7 +329,8 @@
   \gdef\inserttitlemisc{#1}
 }
 \newcommand\dotitlepage{
- \frame[noframenumbering, plain, duration=30 s, ok]{
+ \addtocounter{framenumber}{-1}
+ \frame[plain, duration=30 s, ok]{
   \pnote{Font size test}
   \visible<2>{\null}
   \ifdefined\inserttitleheader
@@ -399,16 +413,20 @@
 \gdef\totalseconds{0}
 \gdef\totalduration{0}
 \define@key{beamerframe}{duration}{%
+ \edef\previnfoslidenumber{\infoslidenumber}
  \edef\infoslidenumber{\the\numexpr \theframenumber + 1 \relax}
- \ifnotappendix
-   \edef\duration{#1}
-   \edef\startduration{\totalminutes'' \totalseconds'}
-   \processduration#1 \relax
-   \edef\endduration{\totalminutes'' \totalseconds'}
-   \edef\extrainfo{#1 (\startduration{} to \endduration)}
-   \message{Processed duration^^J}
- \else
-   \def\extrainfo{#1}
+%  \ClassWarning{mannbeamer}{\previnfoslidenumber \infoslidenumber}
+ \ifnum\previnfoslidenumber<\infoslidenumber
+  \ifnotappendix
+    \edef\duration{#1}
+    \edef\startduration{\totalminutes'' \totalseconds'}
+    \processduration#1 \relax
+    \edef\endduration{\totalminutes'' \totalseconds'}
+    \edef\extrainfo{#1 (\startduration{} to \endduration)}
+    \message{Processed duration^^J}
+  \else
+    \def\extrainfo{#1}
+  \fi
  \fi
 }
 
@@ -447,16 +465,13 @@
 
 \makeatletter
 
-\definecolor{mannbeamer@nok@background}{hsb}{0,.1,1}
-\definecolor{mannbeamer@nok@foreground}{hsb}{0,.2,1}
-
-\definecolor{mannbeamer@hok@background}{hsb}{.1,.2,1}
-\definecolor{mannbeamer@hok@foreground}{hsb}{.1,.4,1}
+\definecolor{mannbeamer@nok@background}{rgb}{1., .9, .9}
+\definecolor{mannbeamer@hok@background}{rgb}{1., .9, .8}
 
 \BeforeBeginEnvironment{frame}{
  \ifmonitorprogress
   \setbeamercolor{background canvas}{bg=mannbeamer@nok@background}
-  \setbeamercolor{frametitle}{bg=mannbeamer@nok@foreground}
+  \setbeamercolor{frametitle}{bg=mannbeamer@nok@background}
  \fi
 }
 \define@key{beamerframe}{nok}[]{
@@ -555,8 +570,7 @@
 %	- switches to appendix mode (deactivates accumulation of frames duration + tweak page numerotation)
 \newcounter{citations}
 \setcounter{citations}{0}
-\def\oldcite{} \let\oldcite=\cite
-\def\cite{\stepcounter{citations}\oldcite}
+\AtDataInput{\stepcounter{citations}}
 \newcommand\doendpages[2][]{
  \autooverviewfalse
  \autosectionfalse
@@ -727,6 +741,6 @@
 }%
 \makeatother
 
-\def\mcaption#1{{\centering\small#1}}
+\def\mcaption#1{\centering{\small\par #1}}
 
 % End of mannbeamer class
