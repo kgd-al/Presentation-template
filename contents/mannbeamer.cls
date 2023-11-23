@@ -465,6 +465,8 @@
 
 \makeatletter
 
+\ifdr@ft\else\monitorprogressfalse\ClassWarningNoLine{mann}{Disabling progress monitors}\fi
+
 \definecolor{mannbeamer@nok@background}{rgb}{1., .9, .9}
 \definecolor{mannbeamer@hok@background}{rgb}{1., .9, .8}
 
