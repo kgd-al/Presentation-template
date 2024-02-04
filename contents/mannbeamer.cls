@@ -69,6 +69,10 @@
 % For auto pnotes
 \RequirePackage{pdfpcnotes}
 
+% For correct characters
+\RequirePackage[utf8]{inputenc}
+\RequirePackage[T1]{fontenc}
+
 % For footnote citations (TODO: option list is quite restrictive)
 \RequirePackage[backend=biber, citestyle=numeric-comp, citetracker=true, sorting=none, giveninits=true, maxcitenames=1, doi=false, isbn=false, url=false]{biblatex}
 
@@ -637,6 +641,12 @@
  \begin{scope}[x={(#2X)}, y={(#2Y)}, shift={(#2.center)},#1]
 }{
  \end{scope}
+}
+\newenvironment{localtoimage}[3][]{%
+ \node (I) [inner sep=0pt] {\includegraphics[#3]{#2}};%
+ \begin{localto}[#1]{I}%
+}{%
+ \end{localto}%
 }
 
 %% ----------------------------------- %%
