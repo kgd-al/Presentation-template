@@ -296,6 +296,19 @@
 %% ----------------------------------- %%
 
 \makeatletter
+\let\beamer@writeslidentry@excludefromnavoff=\beamer@writeslidentry%
+\def\beamer@writeslidentry@excludefromnavon{%
+  \expandafter\beamer@ifempty\expandafter{\beamer@framestartpage}{}% does not happen normally
+  {%else
+    % removed \addtocontents commands
+    \clearpage\beamer@notesactions%
+  }
+}
+\newcommand*{\excludefromnavon}{\let\beamer@writeslidentry=\beamer@writeslidentry@excludefromnavon}
+\newcommand*{\excludefromnavoff}{\let\beamer@writeslidentry=\beamer@writeslidentry@excludefromnavoff}
+\makeatother
+
+\makeatletter
 \ifdr@ft
  \newenvironment{notes}{
   \tikzset{%
@@ -500,23 +513,6 @@
 }
 \makeatother
 
-
-%% ----------------------------------- %%
-%            Notes slide                %
-%% ----------------------------------- %%
-
-\makeatletter
-\let\beamer@writeslidentry@excludefromnavoff=\beamer@writeslidentry%
-\def\beamer@writeslidentry@excludefromnavon{%
-  \expandafter\beamer@ifempty\expandafter{\beamer@framestartpage}{}% does not happen normally
-  {%else
-    % removed \addtocontents commands
-    \clearpage\beamer@notesactions%
-  }
-}
-\newcommand*{\excludefromnavon}{\let\beamer@writeslidentry=\beamer@writeslidentry@excludefromnavon}
-\newcommand*{\excludefromnavoff}{\let\beamer@writeslidentry=\beamer@writeslidentry@excludefromnavoff}
-\makeatother
 
 %% ----------------------------------- %%
 %       Final slides and appendix       %
