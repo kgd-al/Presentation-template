@@ -133,7 +133,10 @@
  \usebeamercolor[fg]{footline}%
 
  % Print extra info to pdfpc
- \ifx\extrainfo\empty\else\pnote{Should last \extrainfo}\fi
+ \ifx\extrainfo\empty\else
+  \edef\pdfpcinfo{Should last \extrainfo}
+  \pnote{\pdfpcinfo}
+ \fi
  
  % If there are extra informations and draft mode is on
  \ifdr@ft
@@ -402,32 +405,45 @@
    
  \else
   \IfSubStr{#2}{min}{
-   \edef\@tmp@frame@duration{\the\numexpr #1 * 60 \relax}
+   \pgfmathsetmacro{\@tmp@frame@duration}{#1 * 60}
   }{
    \edef\@tmp@frame@duration{#1}
   }
   \IfStrEq{#3}{}{}{
-   \edef\@tmp@frame@duration{\the\numexpr \@tmp@frame@duration + #3 \relax}
+   \pgfmathsetmacro{\@tmp@frame@duration}{\@tmp@frame@duration + #3}
   }
-  \xdef\totalduration{\the\numexpr \@tmp@total@duration + \@tmp@frame@duration \relax}
+
+  \pgfmathsetmacro{\totalduration}{int(\@tmp@total@duration + \@tmp@frame@duration)}
+  \xdef\totalduration{\totalduration}
 
   % Formatting total duration
-  \xdef\totalminutes{\the\numexpr \totalduration / 60 \relax}
+  \ifnum\insertduration > 0
+   % Display as a countdown
+   \pgfmathsetmacro{\tremain}{60 * \insertduration - \totalduration}
+   \xdef\tremain{\tremain}
 
-  % Correct rounding issue
-  \ifnum \totalduration < \the\numexpr \totalminutes * 60 \relax
-   \edef\@tmp@total@minutes{\totalminutes}
-   \edef\totalminutes{\the\numexpr \@tmp@total@minutes - 1 \relax}
+   \pgfmathsetmacro{\displayminutes}{int(\tremain / 60)}
+   \pgfmathsetmacro{\displayseconds}{int(mod(\tremain, 60))}
+   \xdef\displaytime{-\displayminutes'' \displayseconds}
+
+  \else
+   % Display as a countup
+   \pgfmathsetmacro{\displayminutes}{int(\totalduration / 60)}
+   \pgfmathsetmacro{\displayseconds}{int(mod(\totalduration, 60))}
+   \xdef\displaytime{\displayminutes'' \displayseconds}
   \fi
-    
-  \xdef\totalseconds{\the\numexpr \totalduration - (\totalminutes * 60) \relax}
-  
  \fi
 }
 
 % Processes duration argument
-\gdef\totalminutes{0}
-\gdef\totalseconds{0}
+\ifnum\insertduration>0
+ \gdef\displayminutes{-\the\numpexpr 60 * \insertduration}
+ \gdef\displayseconds{0}
+\else
+ \gdef\displayminutes{0}
+ \gdef\displayseconds{0}
+\fi
+\gdef\displaytime{---}
 \gdef\totalduration{0}
 \define@key{beamerframe}{duration}{%
  \edef\previnfoslidenumber{\infoslidenumber}
@@ -436,10 +452,10 @@
  \ifnum\previnfoslidenumber<\infoslidenumber
   \ifnotappendix
     \edef\duration{#1}
-    \edef\startduration{\totalminutes'' \totalseconds'}
+    \edef\startduration/{\displaytime}
     \processduration#1 \relax
-    \edef\endduration{\totalminutes'' \totalseconds'}
-    \edef\extrainfo{#1 (\startduration{} to \endduration)}
+    \edef\endduration{\displaytime}
+    \edef\extrainfo{#1 (\startduration/ to \endduration) }
     \message{Processed duration^^J}
   \else
     \def\extrainfo{#1}
