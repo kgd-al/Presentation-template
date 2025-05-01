@@ -366,7 +366,7 @@
    \vspace{1cm}
    { \small \usebeamerfont{author} \insertauthor }\\
    \ifdefined\insertformation
-    { \scriptsize \insertformation } \\
+    { \scriptsize \insertformation } \par
    \fi
    \vfill
    {
