@@ -99,7 +99,6 @@
 \ifdr@ft
   \overfullrule=1mm
 \else
-%   \hypersetup{pdfpagemode=FullScreen}
 \fi
 
 % Nice gradient navigation
@@ -680,6 +679,7 @@
     {\@thefnmark\enspace #1}%
   \global\togglefalse{cbx@togcite}%
 }
+\def\@makefnmark{\hbox{\@textsuperscript{\normalfont[\@thefnmark]}}}
 
 \DeclareCiteCommand{\fncite}[\cbx@superscript]%
   {%
@@ -688,6 +688,18 @@
   }{%
    \usebibmacro{citeindex}%
    \usebibmacro{fncite}%
+   \usebibmacro{cite:comp}%
+  }
+  {}
+  {\usebibmacro{cite:dump}}
+
+\DeclareCiteCommand{\fnshortcite}[\cbx@superscript]%
+  {%
+   \usebibmacro{cite:init}%
+   \let\multicitedelim=\supercitedelim
+  }{%
+   \usebibmacro{citeindex}%
+   \usebibmacro{fnshortcite}%
    \usebibmacro{cite:comp}%
   }
   {}
@@ -729,7 +741,34 @@
   \global\let\cbx@citehook=\empty%
 }
 \let\cbx@citehook=\empty
+
+\DeclareCiteCommand{\fnshortcite}
+  {}
+  {\usebibmacro{fnshortcite}}
+  {}
+  {}
+
+\newbibmacro*{fnshortcite}{%
+ \global\toggletrue{cbx@togcite}%
+ \footnote[\thefield{labelnumber}, frame]{
+  \Citeauthor{\thefield{entrykey}}\ \citetitle{\thefield{entrykey}}
+ }
+}
+
+\DeclareCiteCommand{\fntshortcite}
+  {}
+  {\usebibmacro{fntshortcite}}
+  {}
+  {}
+
+\newbibmacro*{fntshortcite}{%
+ \global\toggletrue{cbx@togcite}%
+ \footnotetext[\thefield{labelnumber}]{
+  \Citeauthor{\thefield{entrykey}}\ \citetitle{\thefield{entrykey}}
+ }
+}
 \makeatother
+
 
 
 %% ----------------------------------- %%
