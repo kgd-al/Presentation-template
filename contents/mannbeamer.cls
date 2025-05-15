@@ -596,7 +596,9 @@
   \excludefromnavon
   \subsection{}
   \begingroup
-%    \setbeamertemplate{frametitle}{}
+   \setbeamertemplate{frametitle}{}
+   \setbeamertemplate{framesubtitle}{}
+   \setbeamertemplate{footer}{}
    \begin{frame}[plain,noframenumbering,label={lastslide}, ok, #1]{\phantom{.}}
     #2   
    \end{frame}
@@ -748,10 +750,16 @@
   {}
   {}
 
+\def\resizecite#1{%
+ \resizebox{%
+  \ifdim\width>.95\textwidth.95\textwidth\else\width\fi%
+ }{!}{#1}%
+}
+
 \newbibmacro*{fnshortcite}{%
  \global\toggletrue{cbx@togcite}%
  \footnote[\thefield{labelnumber}, frame]{
-  \Citeauthor{\thefield{entrykey}}\ \citetitle{\thefield{entrykey}}
+  \resizecite{\Citeauthor{\thefield{entrykey}}\ \citetitle{\thefield{entrykey}}}%
  }
 }
 
@@ -764,7 +772,7 @@
 \newbibmacro*{fntshortcite}{%
  \global\toggletrue{cbx@togcite}%
  \footnotetext[\thefield{labelnumber}]{
-  \Citeauthor{\thefield{entrykey}}\ \citetitle{\thefield{entrykey}}
+  \resizecite{\Citeauthor{\thefield{entrykey}}\ \citetitle{\thefield{entrykey}}}
  }
 }
 \makeatother
